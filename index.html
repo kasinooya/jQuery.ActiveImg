@@ -1,0 +1,606 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>动态图片部件管理器</title>
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen">
+<link href="css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+body{background-color:#f5f5f5}.center{min-width:400px;min-height:400px;margin:-225px 0 0 -225px;background-color:#FFF;position:fixed;left:50%;top:50%}#partWrapper{margin:40px auto;position:relative}#partWrapper .editBtn{position:absolute;top:-35px}#partWrapper #submit{left:58px}#confirmModal{top:40%;z-index:1051;width:480px;margin-left:-240px}.tabbable>.nav .badge{padding-right:6px;padding-left:6px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;margin-right:8px}#contentEdit,#fileUpload{height:342px;overflow-y:auto}#contentEdit .table{width:96%;margin:0 2% 20px}#contentEdit .table i{font-size:1.2em;color:#999;cursor:pointer}#contentEdit .table i:hover{color:#ec090e}#contentEdit .table i.ban{color:#ec090e}#contentEdit .table i.ban:hover{color:#a6dc09}#contentEdit .table td{position:relative}#contentEdit .tooltip-inner{max-width:400px;min-width:250px}#contentEdit .tooltip{top:-35px;left:45px}.uploadify-queue-item{min-height:110px}.itemWell{padding:8px 8px 0 8px;margin:5px 0}.itemWell p{margin:0 0 10px}.itemName{display:inline-block;min-width:52px;padding-right:8px;text-align:right}#styleEdit{padding:10px 60px 30px}#styleEdit .help-inline{margin-left:-100px;color:#999}
+</style>
+</head>
+
+<body>
+<div class="well center">
+  <div id="partWrapper">
+  	<a href="#editModal" role="button" class="btn editBtn" data-toggle="modal">编辑</a>
+    <a id="submit" href="#" role="button" class="btn btn-primary editBtn hide">提交</a>
+    <div class="AIframe">没有内容，点击编辑按钮，增加内容</div>
+  </div>
+</div>
+<div id="confirmModal" class="modal hide fade">
+  <div class="modal-body">
+    <p>确认删除该条内容，该步骤将不能被恢复</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-danger">确认</button>
+  </div>
+</div>
+<div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">编辑动态图片样式和内容</h3>
+  </div>
+  <div class="modal-body">
+    <div class="tabbable">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#contentEdit" data-toggle="tab"><span id="step1" class="badge">1</span>内容编辑</a></li>
+        <li><a href="#fileUpload" data-toggle="tab"><span id="step2" class="badge">2</span>文件上传</a></li>
+        <li><a href="#styleEdit" data-toggle="tab"><span id="step3" class="badge">3</span>样式编辑</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="contentEdit">
+          <table class="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>图片说明</th>
+                <th>日期</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="tab-pane" id="fileUpload">
+          <div class="FileUpload"></div>
+        </div>
+        <div class="tab-pane" id="styleEdit">
+        	<div id="style-radio" class="btn-group" data-toggle="buttons-radio">
+          	<button id="style-normal" class="btn btn-primary">普通模式</button>
+            <button id="style-inner" class="btn btn-primary">内嵌模式</button>
+          </div>
+          <hr>
+          <div class="row-fluid">
+          	<div class="control-group span6">
+              <label class="control-label" for="imgWidth">图片宽度</label>
+              <div class="controls">
+                <div class="input-append">
+                  <input class="span4" id="imgWidth" type="text" value="360">
+                  <span id="img-radio" class="btn-group" data-toggle="buttons-radio">
+                  	<button class="btn radio-px">px</button><button class="btn radio-percent">%</button>
+                  </span>
+                </div>
+                <span class="help-inline"></span>
+              </div>
+            </div>
+            <div class="control-group span6">
+              <label class="control-label" for="imgHeight">图片高度</label>
+              <div class="controls">
+                <div class="input-append">
+                  <input class="span4" id="imgHeight" type="text" value="215">
+                  <span class="add-on">px</span>
+                </div>
+                <span class="help-inline"></span> 
+              </div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="control-group span6">
+              <label class="control-label" for="pWidth">部件宽度</label>
+              <div class="controls">
+                <div class="input-append">
+                  <input class="span4" id="pWidth" type="text" value="362" disabled>
+                  <span id="p-radio" class="btn-group" data-toggle="buttons-radio">
+                  	<button class="btn radio-px">px</button><button class="btn radio-percent">%</button>
+                  </span>
+                </div>
+                <span class="help-inline"></span>
+            	</div>
+            </div>
+            <div class="control-group span6">
+              <label class="control-label" for="pHeight">部件高度</label>
+              <div class="controls">
+                <div class="input-append">
+                  <input class="span4" id="pHeight" type="text" value="241" disabled>
+                  <span class="add-on">px</span>
+                </div>
+                <span class="help-inline"></span>
+              </div>
+            </div>
+          </div>
+          <div id="anime-radio" class="btn-group" data-toggle="buttons-radio">
+          	<button id="anime-fade" class="btn">渐变效果</button>
+            <button id="anime-slide" class="btn">滑动效果</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" id="change">更改</button>
+  </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js"></script> 
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/ActiveImg.mix.js"></script>
+<script type="text/javascript" src="js/bootstrap-datetimepicker.mix.js"></script>
+<script type="text/javascript" src="js/FileUpload.mix.js"></script>
+<script>
+// 输入信息初始化
+var u = {
+	mid: "A01",
+	newpart: false,
+	pid: "P1369396223919613207",
+	psid: "A01_AI01",
+	uid: "C201305240002",
+};
+// 部件内容关联数据存储
+var p = {
+	ActiveImg: {
+		style: "inner",
+		anime: "fade",
+		image_keys: "image/uploads/IMG_20130525165527162737.jpg,image/uploads/IMG_20130525165527722217.jpg,image/uploads/IMG_20130525165527788525.jpg",
+		timestamp: "1369472139541"
+	},
+	Base: {
+		partStyle_id: "A01_AI01",
+		user_id: "C201305240002"
+	},
+	Style: {
+		height: "225",
+		partType: "ActiveImg",
+		siteStyle_id: "A01",
+		width: "338"
+	},
+	id: "P1369396223919613207"
+};
+// 图片库数据存储
+var lib = [
+{
+	alt: "亲爱的魔法师，你是怎么办到的？",
+	date: "1371713110000",
+	id: "images/Chrysanthemum.jpg",
+	library_key: "C201305240002@P1369396223919613207",
+	link: "http://",
+	owner: "C201305240002"
+},
+{
+	alt: "你的睡颜，让我在夜里不能入睡",
+	date: "1371713110001",
+	id: "images/Penguins.jpg",
+	library_key: "C201305240002@P1369396223919613207",
+	link: "http://",
+	owner: "C201305240002"
+},
+{
+	alt: "你的笑容，又让我在昼间几乎沉醉",
+	date: "1371713110002",
+	id: "images/Koala.jpg",
+	library_key: "C201305240002@P1369396223919613207",
+	link: "http://",
+	owner: "C201305240002"
+}
+];
+
+var ai;
+var imgList = [];
+var root = './';
+var diff_h = 26;
+var diff_w = 2;
+$(function() {
+	// ①页面初始化
+	// 动态调整页面主框体居中形式
+	var o = $(".center");
+	var mt = - 25 - (o.height() / 2);
+	var ml = - 25 - (o.width() / 2);
+	o.css("margin", mt + "px 0 0 " + ml + "px");
+	
+	if (!u.newpart) {
+		reloadPart();
+	}
+	
+	// ②动态模态框动作绑定初始化
+	$('#editModal').on('show', modalInit);
+});
+
+function modalInit() {
+/*	// ③动态加载需要的CSS和JS文件
+	$.includePath = root;
+	$.include([
+		'css/font-awesome.min.css',
+		'js/bootstrap-datetimepicker.mix.js',
+		'js/FileUpload.mix.js'
+	]);*/
+	
+	// ④加载页面元素和页面初始化
+	htmlInit();
+	
+	// ⑤数据加载
+	dataInit_page1();
+	dataInit_page3();
+		
+	// 第二次弹出对话框不再初始化
+	$('#editModal').off('show');
+	$('#change').on('click', action.doChange);
+}
+
+var action = {
+	// 重要动作 - 改变部件内容或样式
+	doChange: function() {
+		if ($('#step1').hasClass('badge-warning')) {
+			$('#step1').removeClass('badge-warning').addClass('badge-success');
+		}
+		if ($('#step3').hasClass('badge-warning')) {
+			// 验证数据，将第三页的变化存入p中
+			var width = $('#imgWidth').val();
+			var height = $('#imgHeight').val();
+			if (isNaN(width)) {
+				$('#imgWidth').parents('.control-group').addClass('error');
+				return;
+			} else if (isNaN(height)) {
+				$('#imgHeight').parents('.control-group').addClass('error');
+				return;
+			} else {
+				// 通过验证
+				$('#imgWidth').parents('.control-group').removeClass('error');
+				$('#imgHeight').parents('.control-group').removeClass('error');
+				if ($('#img-radio .radio-percent').hasClass('active')) {
+					if (width > 100) {
+						width = 100;
+						$('#imgWidth').val(width);
+						$('#pWidth').val(width);
+					}
+					width += '%';
+				}
+				var anime = $('#anime-radio button.active').attr('id').split('-').pop();
+				var style = $('#style-radio button.active').attr('id').split('-').pop();
+				p.Style.width = width;
+				p.Style.height = height;
+				p.ActiveImg.anime = anime;
+				p.ActiveImg.style = style;
+				
+				$('#step3').removeClass('badge-warning').addClass('badge-success');
+			}
+		}
+		
+		//重新加载部件
+		reloadPart();
+		$('#submit').removeClass('hide').on('click', action.doSubmit);
+		$('#editModal').modal('hide');
+	},
+	// 重要动作 - 提交变化
+	doSubmit: function() {
+		
+	}
+}
+
+function htmlInit() {
+	// 4.1内容编辑页初始化
+	$('#contentEdit').on('mouseenter', '.atip', function() {
+		$(this).siblings('.tooltip').removeClass('hide').addClass('in');
+	});
+	$('#contentEdit').on('mouseleave', '.atip', function() {
+		$(this).siblings('.tooltip').removeClass('in').addClass('hide');
+	});
+	$('#contentEdit').on('click', 'i.icon-trash', function() {
+		// 点击动作：删除一项内容
+		if(confirm('确认删除该条内容，该步骤将不能被恢复')) {
+			// 增加删除标志
+			var row = $(this).parents('tr');
+			var index = parseInt(row.attr('id'));
+			if (lib[index].action === 'new') {
+				lib[index].action = 'cancel';
+			} else {
+				lib[inde].action = 'remove';
+			}
+			row.fadeOut('slow', function(){
+				$(this).remove();
+			});
+			$('#step1').removeClass('badge-info badge-success').addClass('badge-warning');
+		}
+	});
+	$('#contentEdit').on('click', 'i.icon-ban-circle', function() {
+		// 禁用或启用一项内容
+		if (!$(this).hasClass('ban')) {
+			$(this).addClass('ban').attr('title', '启用');
+			var index = parseInt($(this).parents('tr').attr('id'));
+			lib[index].disable = 'true';
+			if (lib[index].action !== 'new') {
+				lib[index].action = 'disable';
+			}
+			$('#step1').removeClass('badge-info badge-success').addClass('badge-warning');
+		} else {
+			$(this).removeClass('ban').attr('title', '禁用');
+			var index = parseInt($(this).parents('tr').attr('id'));
+			lib[index].disable = 'false';
+			if (lib[index].action !== 'new') {
+				lib[index].action = 'enable';
+			}
+			$('#step1').removeClass('badge-info badge-success').addClass('badge-warning');
+		}
+	});
+	
+	// 4.2文件上传页初始化	
+	var date = new Date();
+	var dateString = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
+	// 具体操作的功能函数集
+	var upload = {
+		// 选择文件后，在当前面板添加一条文件记录的函数
+		add: function(file) {
+			var filename = file.name.replace(/\./, '_');
+			var list = fu1.options.paramList;
+			var str = '<li id="' + filename + '" class="well itemWell">';
+			for (var key in list) {
+				var id = key + '_' + filename;
+				if (key === 'date') {
+					str += '<p><span class="itemName">' + list[key] + ':</span>' + 
+						'<span class="input-append date form_datetime" data-date="' + dateString + '" data-date-format="yyyy-m-d">' + 
+						'<input id="' + id + '" class="itemValue"  name="' + id + '" size="16" type="text" value="' + dateString + '" readonly>' + 
+						'<span class="add-on"><i class="icon-th"></i></span></span>';
+				} else {
+					var extra = '';
+					if (key === 'link') {
+						extra = 'placeholder="http://www.abc.com"';
+					}
+					str += '<p><span class="itemName">' + list[key] + ':</span>' + 
+						'<input id="' + id + '" class="itemValue" name="' + id + '" type="text" ' + extra + '></p>';
+				}				
+			}
+			str += '</li>';
+			fu1._list.append(str);
+			
+			// 启动日期控件
+			$('li#' + filename + ' .form_datetime:last').datetimepicker({
+				language: 'zh-CN',
+				autoclose: true,
+				todayBtn: true,
+				todayHighlight: true,
+				pickerPosition: "bottom-left",
+				minView: 2
+			});
+		},
+		// 移除当前面板一条文件记录的函数
+		remove: function(file) {
+			var filename = file.name.replace(/\./, '_');
+			setTimeout(function() {$("#" + filename).fadeOut('slow', function(){$("#" + filename).remove();});}, 1000);
+		},
+		// 附上随该文件一同上传的参数的函数
+		giveParam: function(file) {
+			var filename = file.name.replace(/\./, '_');
+			var postParam = {};
+			var list = fu1.options.paramList;
+			for (var key in list) {
+				var value = $('#' + key + '_' + filename).val();
+				
+				// 对日期的处理，不正确的格式则输出当日日期
+				if (key === 'date') {
+					var arr = value.split("-");
+					value = new Date(Date.UTC(arr[0], parseInt(arr[1]) - 1, arr[2], -8, 0, 0)).getTime();
+					if (isNaN(value)) {
+						value = new Date(Date.UTC(date.getFullYear(), date.getMonth()+1, date.getDate(), -8, 0, 0)).getTime();
+					}				
+				}
+				
+				postParam[key] = value;
+			}
+			
+			// 附加额外数据
+			postParam.id = filename;
+			postParam.library_key = u.uid + '@' + u.pid;
+			postParam.owner = u.uid;
+			lib.push(postParam);
+		},
+		// 上传文件成功后的处理函数
+		ok: function(file, data, response) {
+			var j = $.parseJSON(decodeURI(data));
+			if (response && j.StatusID == 200) {
+				var filename = file.name.replace(/\./, '_');
+				for (var i in lib) {
+					if (lib[i].id === filename) {
+						lib[i].id = j.Data;
+						lib[i].action = 'new';
+						break;
+					}
+				}
+				
+				$('#step2').addClass('badge-success');
+				// 重新加载数据
+				dataInit_page1();
+				$('#step1').removeClass('badge-info badge-success').addClass('badge-warning');				
+				setTimeout(function() {
+					$("#" + filename).fadeOut('slow', function(){
+						$("#" + filename).remove();
+						$('#step1').parent().tab('show');
+					});
+				}, 2800);
+			}
+		}
+	}
+	
+	// 启动控件
+	var fu1 = new FileUpload(".FileUpload", {
+		swf: root + 'js/scripts/uploadify.swf',
+		uploader: root + 'servlet/FileUploadServlet',
+		hasParam: true,
+		paramList: {alt: '新闻标题', link: '链接地址', date: '日期'},
+		hasControl: true,
+		buttonText: '选择图片',
+		success: upload.ok
+	});
+	fu1.init().setUploadify('onSelect', upload.add)
+	.setUploadify('onCancel', upload.remove)
+	.setUploadify('onUploadStart', upload.giveParam);
+	
+	// 4.3样式编辑页初始化
+	$('#imgWidth').on('change', function() {
+		$('#step3').removeClass('badge-info badge-success').addClass('badge-warning');
+		if ($('#img-radio .radio-px').hasClass('active')) {
+			$('#pWidth').val(parseInt($('#imgWidth').val()) + diff_w);
+		} else {
+			$('#pWidth').val(parseInt($('#imgWidth').val()));
+		}
+	});
+	$('#imgHeight').on('change', function() {
+		$('#step3').removeClass('badge-info badge-success').addClass('badge-warning');
+		$('#pHeight').val(parseInt($('#imgHeight').val()) + diff_h);
+	});
+	$('#img-radio').on('click', 'button', function() {
+		$('#step3').removeClass('badge-info badge-success').addClass('badge-warning');
+		if ($('#img-radio .radio-px').hasClass('active')) {
+			$('#pWidth').val(parseInt($('#imgWidth').val()));
+			$('#p-radio .radio-px').removeClass('active');
+			$('#p-radio .radio-percent').addClass('active');
+		} else {
+			$('#pWidth').val(parseInt($('#imgWidth').val()) + diff_w);
+			$('#p-radio .radio-percent').removeClass('active');
+			$('#p-radio .radio-px').addClass('active');
+		}
+	});
+	$('#style-radio').on('click', 'button', function() {
+		$('#step3').removeClass('badge-info badge-success').addClass('badge-warning');
+	});
+	$('#anime-radio').on('click', 'button', function() {
+		$('#step3').removeClass('badge-info badge-success').addClass('badge-warning');
+	});
+}
+
+function dataInit_page1() {
+	// 5.1内容编辑页面数据加载
+	if (!u.newpart) {
+		var content = '';
+		for(var i in lib) {
+			var d = lib[i];
+			if(d.action !== 'remove') {
+				content += '<tr id="' + i + '_row">';
+				var name = d.id.split('/').pop();
+				content += '<td>' + 
+					'<a class="atip" href="#">' + (parseInt(i) + 1) + '</a>' + 
+					'<div class="tooltip fade top hide">' + 
+					'<div class="tooltip-inner">' + name + '<img src="' + root + lib[i].id + '" alt=""></div>' + 
+					'</div></td>';
+				var title = d.alt == '' ? '-' : d.alt;
+				var reg = /^(http|https):\/\//i;
+				var linker = reg.test(d.link) ? d.link : root + d.link;
+				content += '<td><a href="' + linker + '" title="' + linker + '" target="_blank">' + title + '</a></td>';
+				var date = new Date(parseInt(d.date));
+				var dateString = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate();
+				content += '<td>' + dateString + '</td>';
+				var ban = '';
+				var banTitle = '禁用';
+				if(d.disable === 'true') {
+					ban = ' ban';
+					banTitle = '启用';
+				}
+				content += '<td><i class="icon-trash" title="删除"></i> <i class="icon-ban-circle' + ban + '" title="' + banTitle + '"></i></td>';
+				content += '</tr>';
+			}
+		}
+		$('#contentEdit tbody').html(content);
+		$('#step1').addClass('badge-info');
+	}
+}
+
+function dataInit_page3() {	
+	// 5.2样式编辑页面数据加载
+	var height, width;
+	if (u.newpart) {
+		height = ps.Style.height;
+		width = ps.Style.width;
+	} else {
+		height = p.Style.height;
+		width = p.Style.width;
+	}
+	// 判断px还是%
+	if (width.indexOf('%') == width.length - 1) {
+		$('.radio-percent').each(function() {
+      $(this).addClass('active');
+    });
+		width = parseInt(width);
+		$('#imgWidth').val(width);
+		$('#pWidth').val(width);
+	} else {
+		$('.radio-px').each(function() {
+      $(this).addClass('active');
+    });
+		width = parseInt(width);
+		$('#imgWidth').val(width);
+		$('#pWidth').val(width + diff_w);
+	}
+	height = parseInt(height);
+	$('#imgHeight').val(height);
+	$('#pHeight').val(height + diff_h);
+	
+	if (!u.newpart) {
+		if (p.ActiveImg.style === 'inner') {
+			$('#style-inner').addClass('active');
+		} else {
+			$('#style-normal').addClass('active');
+		}
+		
+		if (p.ActiveImg.anime === 'slide') {
+			$('#anime-slide').addClass('active');
+		} else {
+			$('#anime-fade').addClass('active');
+		}
+		$('#step3').addClass('badge-info');
+	}
+}
+
+function reloadPart() {
+	imgList = [];
+	for (var i in lib) {
+		var action = lib[i].action;
+		if (action !== 'cancel' && action !== 'remove' && lib[i].disable !== 'true') {
+			imgList.push({
+				url: root + lib[i].id,
+				alt: lib[i].alt,
+				link: lib[i].link
+			});
+		}
+	}
+	if (imgList.length) {
+		// 不存在部件则新建
+		$('.AIframe').html('');
+		ai = new ActiveImg('.AIframe', {
+			width: p.Style.width,
+			height: p.Style.height,
+			anime: p.ActiveImg.anime,
+			style: p.ActiveImg.style
+		});
+		ai.setData(imgList).start();
+		
+		// 框架自适应宽度
+		var width = p.Style.width;
+		if (width.indexOf('%') === width.length - 1) {
+			$('#partWrapper').addClass('span4').width('');
+		} else {
+			$('#partWrapper').removeClass('span4').width($('.AIframe').width());
+		}
+	} else {
+		ai.stop().setData(imgList);
+	}
+}
+
+// 为jQuery增加include函数，用于获取js或css文件
+$.extend({
+  includePath: '',
+  include: function(file) {
+    var files = typeof file == "string" ? [file] : file;
+    for (var i in files) {
+      var att = files[i].split('.');
+      var ext = att[att.length - 1].toLowerCase();
+      var isCSS = ext == "css";
+      var tag = isCSS ? "link": "script";
+      var attr = isCSS ? " type='text/css' rel='stylesheet' ": " language='javascript' type='text/javascript' ";
+      var link = (isCSS ? "href": "src") + "='" + $.includePath + files[i] + "'";
+      if ($(tag + "[" + link + "]").length == 0) $('body').append("<" + tag + attr + link + "></" + tag + ">");
+    }
+  }
+});
+</script>
+</body>
+</html>
